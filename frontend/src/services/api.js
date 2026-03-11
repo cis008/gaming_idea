@@ -29,5 +29,6 @@ export const fetchBattleFlashcards = (payload) => api.post("/battle-flashcards",
 export const startBattle = (payload) => api.post("/battle-start", payload);
 export const nextBattleQuestion = (payload) => api.post("/battle-question", payload);
 export const submitBattleAnswer = (payload) => api.post("/battle-answer", payload);
+export const summarizeVideo = (payload) => api.post("/video-summary", payload);
 
 export default api;

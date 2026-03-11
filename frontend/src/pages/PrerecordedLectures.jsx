@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PixelButton from "../components/PixelButton";
 import PixelCard from "../components/PixelCard";
-import { explainTopic, fetchPrerecordedLectures, fetchTopicProgress, generateQuiz, studyChat } from "../services/api";
+import { explainTopic, fetchPrerecordedLectures, fetchTopicProgress, generateQuiz, studyChat, summarizeVideo } from "../services/api";
 
 function toEmbedUrl(url) {
   try {
@@ -25,6 +25,8 @@ function PrerecordedLectures() {
   const [messages, setMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [videoSummary, setVideoSummary] = useState(null);
+  const [loadingSummary, setLoadingSummary] = useState(false);
 
   const loadTopicProgress = async () => {
     try {
@@ -72,6 +74,24 @@ function PrerecordedLectures() {
     setExplanation(null);
     setMessages([]);
     setChatInput("");
+    setVideoSummary(null);
+  };
+
+  const handleSummarizeVideo = async () => {
+    if (!selectedVideo?.url) return;
+    setLoadingSummary(true);
+    setVideoSummary(null);
+    try {
+      const response = await summarizeVideo({
+        video_url: selectedVideo.url,
+        video_title: selectedVideo.title || "",
+      });
+      setVideoSummary(response.data);
+    } catch {
+      setVideoSummary({ error: "Failed to summarize video. Please try again." });
+    } finally {
+      setLoadingSummary(false);
+    }
   };
 
   const handleExplain = async () => {
@@ -184,7 +204,47 @@ function PrerecordedLectures() {
                 >
                   Take Quiz for This Video
                 </PixelButton>
+                <PixelButton
+                  onClick={handleSummarizeVideo}
+                  disabled={loadingSummary}
+                  className="text-xs bg-[#7c3aed] text-white"
+                >
+                  {loadingSummary ? "Summarizing..." : "AI Summarize Video"}
+                </PixelButton>
               </div>
+
+              {videoSummary && (
+                <div className="pixel-card mt-4 text-sm border-[#7c3aed]">
+                  <p className="font-semibold text-purple-400 mb-1">Claude AI Summary</p>
+                  {videoSummary.error && !videoSummary.summary && (
+                    <p className="text-red-400">{videoSummary.error}</p>
+                  )}
+                  {videoSummary.summary && (
+                    <>
+                      <p className="text-slate-300">{videoSummary.summary}</p>
+                      {videoSummary.key_points?.length > 0 && (
+                        <>
+                          <p className="mt-3 font-semibold text-purple-400">Key Points</p>
+                          <ul className="mt-1 list-disc list-inside space-y-1 text-slate-300">
+                            {videoSummary.key_points.map((point, i) => (
+                              <li key={i}>{point}</li>
+                            ))}
+                          </ul>
+                        </>
+                      )}
+                      {videoSummary.study_tip && (
+                        <>
+                          <p className="mt-3 font-semibold text-purple-400">Study Tip</p>
+                          <p className="mt-1 text-slate-300">{videoSummary.study_tip}</p>
+                        </>
+                      )}
+                      {videoSummary.error && (
+                        <p className="mt-2 text-xs text-yellow-500">Note: {videoSummary.error}</p>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
 
               {explanation && (
                 <div className="pixel-card mt-4 text-sm">

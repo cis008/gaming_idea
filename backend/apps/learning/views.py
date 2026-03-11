@@ -327,6 +327,19 @@ class StudyChatView(APIView):
         return Response({"topic": topic, **response_payload})
 
 
+class VideoSummaryView(APIView):
+    def post(self, request):
+        video_url = request.data.get("video_url", "").strip()
+        video_title = request.data.get("video_title", "").strip()
+
+        if not video_url:
+            return Response({"detail": "video_url is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        ai_service = AIOrchestratorService()
+        result = ai_service.summarize_video(video_url=video_url, video_title=video_title)
+        return Response(result)
+
+
 class PrerecordedLecturesView(APIView):
     def get(self, request):
         return Response({"lectures": PRERECORDED_LECTURES})

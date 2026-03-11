@@ -36,13 +36,22 @@ class AIOrchestratorService:
     }
 
     def _llm(self):
-        provider = os.getenv("LLM_PROVIDER", "openai").lower()
+        provider = os.getenv("LLM_PROVIDER", "claude").lower()
         if provider == "gemini":
             from langchain_google_genai import ChatGoogleGenerativeAI
 
             return ChatGoogleGenerativeAI(
                 model=os.getenv("GEMINI_MODEL", "gemini-1.5-flash"),
                 google_api_key=os.getenv("GEMINI_API_KEY", ""),
+                temperature=0.3,
+            )
+
+        if provider == "claude":
+            from langchain_anthropic import ChatAnthropic
+
+            return ChatAnthropic(
+                model=os.getenv("ANTHROPIC_MODEL", "claude-3-5-haiku-20241022"),
+                api_key=os.getenv("ANTHROPIC_API_KEY", ""),
                 temperature=0.3,
             )
 
@@ -451,6 +460,88 @@ Rules:
             ]
 
         return normalized
+
+    def summarize_video(self, video_url: str, video_title: str = "") -> dict[str, Any]:
+        """Fetch YouTube transcript and summarize it using Claude (or active LLM)."""
+        transcript_text = ""
+        error_note = ""
+
+        # Extract YouTube video ID
+        video_id = None
+        patterns = [
+            r"(?:v=|youtu\.be/)([A-Za-z0-9_-]{11})",
+            r"embed/([A-Za-z0-9_-]{11})",
+        ]
+        for pattern in patterns:
+            match = re.search(pattern, video_url)
+            if match:
+                video_id = match.group(1)
+                break
+
+        if video_id:
+            try:
+                from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
+                transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+                transcript_text = " ".join([entry["text"] for entry in transcript_list])
+                # Truncate to ~4000 words to stay within token limits
+                words = transcript_text.split()
+                if len(words) > 4000:
+                    transcript_text = " ".join(words[:4000]) + " [...truncated]"
+            except Exception as e:
+                error_note = f"Transcript unavailable ({type(e).__name__}). Summarizing from title only."
+        else:
+            error_note = "Could not extract video ID from URL."
+
+        # Build the prompt depending on what we have
+        if transcript_text:
+            prompt = f"""You are an expert AI tutor. Summarize the following YouTube video transcript for a student.
+Return only valid JSON with keys:
+- title (string, the video topic)
+- summary (string, 3-5 sentences capturing the main idea)
+- key_points (array of 4-6 concise bullet strings)
+- study_tip (string, one actionable advice for the student)
+
+Video title: {video_title or 'Not provided'}
+Transcript:
+{transcript_text}
+
+Rules: No markdown. Output JSON only."""
+        else:
+            prompt = f"""You are an expert AI tutor. Summarize the following educational video for a student based on its title.
+Return only valid JSON with keys:
+- title (string)
+- summary (string, 3-5 sentences of what this topic covers)
+- key_points (array of 4-6 concise bullet strings)
+- study_tip (string, one actionable advice)
+
+Video title: {video_title or video_url}
+Note: {error_note}
+
+Rules: No markdown. Output JSON only."""
+
+        data = self._invoke_json(prompt)
+
+        if not data:
+            return {
+                "title": video_title or video_url,
+                "summary": f"This video covers key concepts related to '{video_title or 'the topic'}'. Review the content carefully and take notes on definitions and examples.",
+                "key_points": [
+                    "Understand the core definition and purpose",
+                    "Note real-world applications",
+                    "Identify common misconceptions",
+                    "Practice with related examples after watching",
+                ],
+                "study_tip": "Pause the video after each major concept and summarize it in your own words.",
+                "error": error_note or None,
+            }
+
+        return {
+            "title": str(data.get("title", video_title or video_url)),
+            "summary": str(data.get("summary", "")),
+            "key_points": list(data.get("key_points", []))[:6],
+            "study_tip": str(data.get("study_tip", "")),
+            "error": error_note or None,
+        }
 
     def generate_battle_question(self, subject: str, concept: str, asked_questions: list[str] | None = None) -> dict[str, Any]:
         asked_questions = [str(item).strip() for item in (asked_questions or []) if str(item).strip()]

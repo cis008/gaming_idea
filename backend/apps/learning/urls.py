@@ -10,6 +10,7 @@ from apps.learning.views import (
     PrerecordedLecturesView,
     StudyChatView,
     TopicProgressView,
+    VideoSummaryView,
 )
 
 urlpatterns = [
@@ -17,6 +18,7 @@ urlpatterns = [
     path("study-chat", StudyChatView.as_view(), name="study-chat"),
     path("prerecorded-lectures", PrerecordedLecturesView.as_view(), name="prerecorded-lectures"),
     path("topic-progress", TopicProgressView.as_view(), name="topic-progress"),
+    path("video-summary", VideoSummaryView.as_view(), name="video-summary"),
     path("battle-roadmap", BattleRoadmapView.as_view(), name="battle-roadmap"),
     path("battle-flashcards", BattleFlashcardsView.as_view(), name="battle-flashcards"),
     path("battle-start", BattleStartView.as_view(), name="battle-start"),
