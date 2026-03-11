@@ -29,9 +29,8 @@ function Login() {
       localStorage.setItem("username", response.data.username);
       navigate("/profile");
     } catch (err) {
-      // Handle various error formats
       let errorMsg = "Authentication failed.";
-      
+
       if (err.response?.data?.detail) {
         errorMsg = err.response.data.detail;
       } else if (err.response?.data?.username) {
@@ -47,7 +46,7 @@ function Login() {
           ? err.response.data.email[0]
           : err.response.data.email;
       }
-      
+
       setError(errorMsg);
     }
   };
@@ -55,52 +54,77 @@ function Login() {
   return (
     <main className="login-bg">
       <div className="relative z-10 mx-auto flex max-w-md flex-col px-4 py-14">
-        <h1 className="retro-title text-3xl font-bold">{isSignup ? "Create Account" : "Welcome Back"}</h1>
-        <p className="mt-2 text-slate-300">Sign in to continue your gamified AI learning journey.</p>
+        {/* Pokédex-style header */}
+        <div className="mb-6 text-center">
+          <p
+            style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "0.6rem",
+              color: "#f1c40f",
+              textShadow: "1px 1px 0 #2d3436",
+              letterSpacing: "0.08em",
+            }}
+          >
+            🌿 TRAINER LOGIN
+          </p>
+        </div>
+
+        <h1 className="retro-title text-2xl font-bold">
+          {isSignup ? "New Trainer" : "Welcome Back"}
+        </h1>
+        <p className="mt-2" style={{ color: "#2d3436" }}>
+          {isSignup
+            ? "Register to begin your Pokémon learning journey."
+            : "Sign in to continue your gamified AI learning journey."}
+        </p>
 
         {sessionExpired && (
-          <div className="mt-4 rounded-lg border-2 border-amber-400 bg-amber-900/60 px-4 py-3 text-sm text-amber-200">
+          <div
+            className="mt-4 rounded-lg border-2 px-4 py-3 text-sm"
+            style={{ borderColor: "#f1c40f", background: "rgba(241,196,15,0.15)", color: "#1f2937" }}
+          >
             ⚠ Your session expired. Please log in again.
           </div>
         )}
 
         <PixelCard className="mt-6">
-        <form onSubmit={onSubmit} className="space-y-4">
-          <input
-            className="pixel-input w-full"
-            placeholder="Username"
-            name="username"
-            value={form.username}
-            onChange={onChange}
-            required
-          />
-          {isSignup && (
+          <form onSubmit={onSubmit} className="space-y-4">
             <input
               className="pixel-input w-full"
-              placeholder="Email"
-              name="email"
-              type="email"
-              value={form.email}
+              placeholder="Username"
+              name="username"
+              value={form.username}
               onChange={onChange}
+              required
             />
-          )}
-          <input
-            className="pixel-input w-full"
-            placeholder="Password"
-            name="password"
-            type="password"
-            value={form.password}
-            onChange={onChange}
-            required
-          />
-          {error && <p className="text-sm text-rose-300">{error}</p>}
-          <PixelButton className="w-full">{isSignup ? "Sign Up" : "Login"}</PixelButton>
-        </form>
+            {isSignup && (
+              <input
+                className="pixel-input w-full"
+                placeholder="Email"
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={onChange}
+              />
+            )}
+            <input
+              className="pixel-input w-full"
+              placeholder="Password"
+              name="password"
+              type="password"
+              value={form.password}
+              onChange={onChange}
+              required
+            />
+            {error && <p className="text-sm font-semibold" style={{ color: "#e74c3c" }}>{error}</p>}
+            <PixelButton className="w-full">{isSignup ? "Sign Up" : "▶ Login"}</PixelButton>
+          </form>
         </PixelCard>
 
         <button
           onClick={() => setIsSignup((prev) => !prev)}
-          className="mt-4 text-left text-sm text-cyan-300 hover:text-cyan-200"
+          className="mt-4 text-left text-sm font-semibold transition hover:opacity-80"
+          style={{ color: "#27ae60" }}
         >
           {isSignup ? "Already have an account? Login" : "Need an account? Sign up"}
         </button>

@@ -31,34 +31,56 @@ function Dashboard() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="retro-title text-3xl font-bold">Dashboard</h1>
-      <p className="mt-2 text-slate-600">Track your points, level, streak, and quiz performance.</p>
+      {/* Page header — Trainer Status screen */}
+      <div className="mb-2 flex items-center gap-3">
+        <span className="text-2xl">🏟️</span>
+        <h1 className="retro-title text-3xl font-bold">Dashboard</h1>
+      </div>
+      <p className="mt-1" style={{ color: "#6b7280" }}>
+        Track your points, level, streak, and quiz performance.
+      </p>
 
+      {/* Stat cards */}
       <div className="mt-6">
         <DashboardCards stats={stats} />
       </div>
 
+      {/* Overall progress + badges */}
       <PixelCard className="mt-6">
-        <ProgressBar value={progress.progress_percent} />
+        <h2 className="retro-title text-lg font-semibold">📈 Overall Progress</h2>
+        <div className="mt-3">
+          <ProgressBar value={progress.progress_percent} />
+        </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {(progress.badges || []).map((badge) => (
             <RetroBadge key={badge} text={badge} />
           ))}
         </div>
-        <p className="mt-3 text-sm text-slate-700">Learning streak: {progress.streak || 0}</p>
-        <p className="mt-1 text-sm text-slate-700">Login streak days: {loginStreakDays}</p>
-        <p className="mt-1 text-sm text-slate-700">Quizzes completed: {stats.quizzes_completed || 0}</p>
+        <div className="mt-3 grid grid-cols-3 gap-2 text-sm">
+          <p style={{ color: "#1f2937" }}>
+            <span style={{ color: "#27ae60", fontWeight: 700 }}>🔥 Streak:</span> {progress.streak || 0}
+          </p>
+          <p style={{ color: "#1f2937" }}>
+            <span style={{ color: "#3498db", fontWeight: 700 }}>📅 Login Days:</span> {loginStreakDays}
+          </p>
+          <p style={{ color: "#1f2937" }}>
+            <span style={{ color: "#f1c40f", fontWeight: 700 }}>📝 Quizzes:</span> {stats.quizzes_completed || 0}
+          </p>
+        </div>
       </PixelCard>
 
+      {/* Section progress */}
       <PixelCard className="mt-6">
-        <h2 className="retro-title text-xl font-semibold">Section Progress</h2>
+        <h2 className="retro-title text-xl font-semibold">📚 Section Progress</h2>
         <div className="mt-4 space-y-4">
-          {lectureProgress.length === 0 && <p className="text-slate-600">No section progress yet.</p>}
+          {lectureProgress.length === 0 && (
+            <p style={{ color: "#6b7280" }}>No section progress yet.</p>
+          )}
           {lectureProgress.map((section) => (
             <div key={section.category}>
               <div className="flex items-center justify-between text-sm">
-                <p className="font-medium text-slate-800">{section.category}</p>
-                <p className="text-slate-600">
+                <p className="font-semibold" style={{ color: "#1f2937" }}>{section.category}</p>
+                <p style={{ color: "#6b7280" }}>
                   {section.completed_topics}/{section.total_topics} ({section.progress_percent}%)
                 </p>
               </div>
@@ -70,14 +92,19 @@ function Dashboard() {
         </div>
       </PixelCard>
 
+      {/* Recent quizzes */}
       <PixelCard className="mt-6">
-        <h2 className="retro-title text-xl font-semibold">Recent Quizzes</h2>
+        <h2 className="retro-title text-xl font-semibold">📝 Recent Quizzes</h2>
         <div className="mt-4 space-y-2">
-          {recentQuizzes.length === 0 && <p className="text-slate-600">No quizzes yet.</p>}
+          {recentQuizzes.length === 0 && (
+            <p style={{ color: "#6b7280" }}>No quizzes yet.</p>
+          )}
           {recentQuizzes.map((quiz) => (
             <div key={quiz.id} className="pixel-card text-sm">
-              <p className="font-medium text-slate-800">{quiz.topic}</p>
-              <p className="text-slate-600">Score: {quiz.score}/{quiz.total} • Accuracy: {quiz.accuracy}%</p>
+              <p className="font-semibold" style={{ color: "#1f2937" }}>{quiz.topic}</p>
+              <p style={{ color: "#6b7280" }}>
+                Score: {quiz.score}/{quiz.total} • Accuracy: {quiz.accuracy}%
+              </p>
             </div>
           ))}
         </div>

@@ -56,8 +56,13 @@ function Quiz() {
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
-      <h1 className="retro-title text-3xl font-bold">Quiz: {topic || "Topic"}</h1>
-      <p className="mt-2 text-slate-300">Answer all MCQs and submit to get your score and XP update.</p>
+      <div className="flex items-center gap-3">
+        <span className="text-2xl">📝</span>
+        <h1 className="retro-title text-3xl font-bold">Quiz: {topic || "Topic"}</h1>
+      </div>
+      <p className="mt-2" style={{ color: "#6b7280" }}>
+        Answer all MCQs and submit to get your score and XP update.
+      </p>
 
       <div className="mt-6">
         <QuizComponent questions={questions} answers={answers} onAnswer={onAnswer} />
@@ -65,8 +70,10 @@ function Quiz() {
 
       {questions.length > 0 && (
         <div className="mt-6">
-          <PixelButton onClick={onSubmit}>Submit Quiz</PixelButton>
-          {submitError && <p className="mt-3 text-sm text-rose-300">{submitError}</p>}
+          <PixelButton onClick={onSubmit}>Submit Quiz ▶</PixelButton>
+          {submitError && (
+            <p className="mt-3 text-sm font-semibold" style={{ color: "#e74c3c" }}>{submitError}</p>
+          )}
         </div>
       )}
     </main>

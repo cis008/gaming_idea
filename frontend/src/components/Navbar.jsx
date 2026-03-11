@@ -1,13 +1,8 @@
 import RetroNavbar from "./RetroNavbar";
 
-function Navbar({ theme, onThemeChange, heroBackground, onHeroBackgroundChange, backgroundOptions, isHomePage, isLoginPage }) {
+function Navbar({ isHomePage, isLoginPage }) {
   return (
     <RetroNavbar
-      theme={theme}
-      onThemeChange={onThemeChange}
-      heroBackground={heroBackground}
-      onHeroBackgroundChange={onHeroBackgroundChange}
-      backgroundOptions={backgroundOptions}
       isHomePage={isHomePage}
       isLoginPage={isLoginPage}
     />

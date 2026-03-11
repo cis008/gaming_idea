@@ -166,14 +166,20 @@ function PrerecordedLectures() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="text-3xl font-bold text-[#facc15]">Learning Section</h1>
-      <p className="mt-2 text-slate-700">Watch section-wise learning videos and take a quiz for each selected topic.</p>
+      <div className="flex items-center gap-3">
+        <span className="text-2xl">📺</span>
+        <h1 className="retro-title text-3xl font-bold">Learning Section</h1>
+      </div>
+      <p className="mt-2" style={{ color: "#6b7280" }}>
+        Watch section-wise learning videos and take a quiz for each selected topic.
+      </p>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
+        {/* Video player + AI tools */}
         <PixelCard className="lg:col-span-2">
           {embedUrl ? (
             <>
-              <div className="aspect-video overflow-hidden border-[3px] border-[#22c55e]">
+              <div className="aspect-video overflow-hidden rounded-lg border-[3px]" style={{ borderColor: "#2ecc71" }}>
                 <iframe
                   title={selectedVideo?.title || "Lecture Player"}
                   src={embedUrl}
@@ -183,62 +189,56 @@ function PrerecordedLectures() {
                   allowFullScreen
                 />
               </div>
-              <h2 className="mt-4 text-xl font-semibold">{selectedVideo?.title}</h2>
-              <p className="mt-1 text-sm text-slate-600">Section: {selectedVideo?.category}</p>
+              <h2 className="mt-4 text-xl font-semibold" style={{ color: "#1f2937" }}>{selectedVideo?.title}</h2>
+              <p className="mt-1 text-sm" style={{ color: "#6b7280" }}>Section: {selectedVideo?.category}</p>
               <a
                 href={selectedVideo?.url}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-2 inline-block text-sm text-cyan-300 hover:text-cyan-200"
+                className="mt-2 inline-block text-sm font-semibold transition hover:opacity-75"
+                style={{ color: "#3498db" }}
               >
-                Open on YouTube
+                ↗ Open on YouTube
               </a>
 
+              {/* Action buttons */}
               <div className="mt-4 flex flex-wrap gap-2">
-                <PixelButton
-                  onClick={handleExplain}
-                  disabled={loadingExplain}
-                  className="text-xs"
-                >
-                  {loadingExplain ? "Explaining..." : "AI Explain Concept"}
+                <PixelButton onClick={handleExplain} disabled={loadingExplain} className="text-xs">
+                  {loadingExplain ? "Explaining..." : "🧠 AI Explain"}
                 </PixelButton>
                 <PixelButton
                   onClick={() => handleSendStudyMessage("Help me study this topic in a conversation and test my previous knowledge first.")}
                   disabled={chatLoading}
-                  className="text-xs bg-[#1f2937] text-white"
+                  className="text-xs"
                 >
-                  {chatLoading ? "Starting Chat..." : "Start AI Chat"}
+                  {chatLoading ? "Starting Chat..." : "💬 AI Chat"}
                 </PixelButton>
-                <PixelButton
-                  onClick={handleGenerateQuiz}
-                  className="text-xs bg-[#ef4444] text-white"
-                >
-                  Take Quiz for This Video
+                <PixelButton onClick={handleGenerateQuiz} className="text-xs">
+                  📝 Take Quiz
                 </PixelButton>
-                <PixelButton
-                  onClick={handleSummarizeVideo}
-                  disabled={loadingSummary}
-                  className="text-xs bg-[#7c3aed] text-white"
-                >
-                  {loadingSummary ? "Summarizing..." : "AI Summarize Video"}
+                <PixelButton onClick={handleSummarizeVideo} disabled={loadingSummary} className="text-xs">
+                  {loadingSummary ? "Summarizing..." : "✨ Summarize"}
                 </PixelButton>
               </div>
 
-              {quizError && <p className="mt-3 text-sm text-rose-300">{quizError}</p>}
+              {quizError && (
+                <p className="mt-3 text-sm font-semibold" style={{ color: "#e74c3c" }}>{quizError}</p>
+              )}
 
+              {/* Video summary — dialogue box */}
               {videoSummary && (
-                <div className="pixel-card mt-4 text-sm border-[#7c3aed]">
-                  <p className="font-semibold text-purple-400 mb-1">Claude AI Summary</p>
+                <div className="dialogue-box mt-4 text-sm">
+                  <p className="pokemon-label mb-2">✨ AI Summary</p>
                   {videoSummary.error && !videoSummary.summary && (
-                    <p className="text-red-400">{videoSummary.error}</p>
+                    <p style={{ color: "#e74c3c" }}>{videoSummary.error}</p>
                   )}
                   {videoSummary.summary && (
                     <>
-                      <p className="text-slate-300">{videoSummary.summary}</p>
+                      <p style={{ color: "#1f2937" }}>{videoSummary.summary}</p>
                       {videoSummary.key_points?.length > 0 && (
                         <>
-                          <p className="mt-3 font-semibold text-purple-400">Key Points</p>
-                          <ul className="mt-1 list-disc list-inside space-y-1 text-slate-300">
+                          <p className="mt-3 font-bold" style={{ color: "#27ae60" }}>Key Points</p>
+                          <ul className="mt-1 list-disc list-inside space-y-1" style={{ color: "#1f2937" }}>
                             {videoSummary.key_points.map((point, i) => (
                               <li key={i}>{point}</li>
                             ))}
@@ -247,39 +247,39 @@ function PrerecordedLectures() {
                       )}
                       {videoSummary.study_tip && (
                         <>
-                          <p className="mt-3 font-semibold text-purple-400">Study Tip</p>
-                          <p className="mt-1 text-slate-300">{videoSummary.study_tip}</p>
+                          <p className="mt-3 font-bold" style={{ color: "#3498db" }}>Study Tip</p>
+                          <p className="mt-1" style={{ color: "#1f2937" }}>{videoSummary.study_tip}</p>
                         </>
                       )}
                       {videoSummary.error && (
-                        <p className="mt-2 text-xs text-yellow-500">Note: {videoSummary.error}</p>
+                        <p className="mt-2 text-xs" style={{ color: "#e67e22" }}>Note: {videoSummary.error}</p>
                       )}
                     </>
                   )}
                 </div>
               )}
 
+              {/* AI explanation — dialogue box */}
               {explanation && (
-                <div className="pixel-card mt-4 text-sm">
-                  <p className="font-semibold text-cyan-200">Summary</p>
-                  <p className="mt-1 text-slate-300">{explanation.concept_summary}</p>
-                  <p className="mt-3 font-semibold text-cyan-200">Simple Explanation</p>
-                  <p className="mt-1 text-slate-300">{explanation.simple_explanation}</p>
+                <div className="dialogue-box mt-4 text-sm">
+                  <p className="pokemon-label mb-2">🧠 AI Explanation</p>
+                  <p className="font-bold" style={{ color: "#27ae60" }}>Summary</p>
+                  <p className="mt-1" style={{ color: "#1f2937" }}>{explanation.concept_summary}</p>
+                  <p className="mt-3 font-bold" style={{ color: "#3498db" }}>Simple Explanation</p>
+                  <p className="mt-1" style={{ color: "#1f2937" }}>{explanation.simple_explanation}</p>
                 </div>
               )}
 
+              {/* AI Chat messages */}
               {messages.length > 0 && (
                 <div className="pixel-card mt-4">
-                  <p className="mb-2 font-semibold text-cyan-200">AI Chat</p>
+                  <p className="pokemon-label mb-2">💬 AI Chat</p>
                   <div className="max-h-56 space-y-2 overflow-y-auto">
                     {messages.map((message, index) => (
                       <div
                         key={index}
-                        className={`max-w-[90%] rounded px-3 py-2 text-sm leading-relaxed ${
-                          message.role === "user"
-                            ? "ml-auto border border-[#7dd3fc] bg-[#e0f2fe] text-[#0f172a]"
-                            : "border border-[#1e293b] bg-[#0f172a] text-white"
-                        }`}
+                        className={`max-w-[90%] px-3 py-2 text-sm leading-relaxed ${message.role === "user" ? "chat-user ml-auto" : "chat-ai"
+                          }`}
                       >
                         {message.content}
                       </div>
@@ -288,6 +288,7 @@ function PrerecordedLectures() {
                 </div>
               )}
 
+              {/* Chat input */}
               <div className="mt-3 flex gap-2">
                 <input
                   className="pixel-input w-full text-sm"
@@ -295,9 +296,7 @@ function PrerecordedLectures() {
                   value={chatInput}
                   onChange={(event) => setChatInput(event.target.value)}
                   onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      handleSendStudyMessage();
-                    }
+                    if (event.key === "Enter") handleSendStudyMessage();
                   }}
                 />
                 <PixelButton
@@ -310,19 +309,22 @@ function PrerecordedLectures() {
               </div>
             </>
           ) : (
-            <p className="text-slate-600">No videos available.</p>
+            <p style={{ color: "#6b7280" }}>No videos available.</p>
           )}
         </PixelCard>
 
+        {/* Lecture sidebar */}
         <PixelCard>
-          <h3 className="text-lg font-semibold">Lecture Sections</h3>
+          <h3 className="retro-title text-base font-semibold">📚 Lecture Sections</h3>
           <div className="mt-3 max-h-[32rem] space-y-4 overflow-y-auto pr-2">
             {lectureCatalog.map((section) => (
               <div key={section.category}>
                 <div className="mb-2">
                   <div className="flex items-center justify-between text-sm">
-                    <p className="font-medium text-cyan-300">{section.category}</p>
-                    <p className="text-slate-600">{sectionProgressMap[section.category]?.progress_percent || 0}%</p>
+                    <p className="font-semibold" style={{ color: "#27ae60" }}>{section.category}</p>
+                    <p style={{ color: "#6b7280" }}>
+                      {sectionProgressMap[section.category]?.progress_percent || 0}%
+                    </p>
                   </div>
                   <div className="xp-shell mt-1">
                     <div
@@ -336,11 +338,24 @@ function PrerecordedLectures() {
                     <button
                       key={topic.title}
                       onClick={() => handleSelectTopic(section.category, topic)}
-                      className={`w-full rounded-none border-[3px] px-3 py-2 text-left text-sm transition ${
+                      className="w-full rounded-lg border-2 px-3 py-2 text-left text-sm font-semibold transition"
+                      style={
                         selectedVideo?.title === topic.title
-                          ? "border-[#22c55e] bg-[#38bdf8] text-[#0f172a]"
-                          : "border-[#22c55e] bg-[#0b1224] text-[#dbeafe] hover:bg-[#1f2937] hover:text-[#ffffff]"
-                      }`}
+                          ? { borderColor: "#2ecc71", background: "#d4edda", color: "#1f2937" }
+                          : { borderColor: "#2d3436", background: "#f9fafb", color: "#1f2937" }
+                      }
+                      onMouseEnter={e => {
+                        if (selectedVideo?.title !== topic.title) {
+                          e.currentTarget.style.borderColor = "#2ecc71";
+                          e.currentTarget.style.background = "#f0fff4";
+                        }
+                      }}
+                      onMouseLeave={e => {
+                        if (selectedVideo?.title !== topic.title) {
+                          e.currentTarget.style.borderColor = "#2d3436";
+                          e.currentTarget.style.background = "#f9fafb";
+                        }
+                      }}
                     >
                       {topic.title}
                     </button>

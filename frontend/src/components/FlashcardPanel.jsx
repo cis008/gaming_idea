@@ -3,29 +3,42 @@ function FlashcardPanel({ flashcards = [], index = 0, flipped = false, onFlip, o
 
   if (!card) {
     return (
-      <div className="pixel-card">
-        <p className="text-sm text-slate-400">Pick a concept to load flashcards.</p>
+      <div className="dialogue-box">
+        <p className="text-sm" style={{ color: "#6b7280" }}>Pick a concept to load flashcards.</p>
       </div>
     );
   }
 
   return (
-    <div className="pixel-card min-h-[230px]">
-      <div className="flex items-center justify-between text-xs text-slate-400">
-        <span>Flashcard {index + 1}/{flashcards.length}</span>
+    <div className="dialogue-box min-h-[230px]">
+      <div className="flex items-center justify-between" style={{ marginBottom: "0.75rem" }}>
+        <span className="pokemon-label">
+          Card {index + 1}/{flashcards.length}
+        </span>
         <button onClick={onFlip} className="pixel-button px-2 py-1 text-[10px]">Flip</button>
       </div>
 
       {!flipped ? (
-        <div className="mt-6">
-          <p className="text-xs uppercase tracking-wide text-slate-400">Front</p>
-          <p className="mt-2 text-lg font-semibold text-slate-100">{card.front}</p>
+        <div className="mt-4">
+          <p className="pokemon-label">Question</p>
+          <p className="mt-3 text-base font-semibold leading-relaxed" style={{ color: "#1f2937" }}>
+            {card.front}
+          </p>
         </div>
       ) : (
-        <div className="mt-4 space-y-2 text-sm text-slate-200">
-          <p><span className="font-semibold text-cyan-300">Explanation:</span> {card.explanation}</p>
-          <p><span className="font-semibold text-cyan-300">Example:</span> {card.example}</p>
-          <p><span className="font-semibold text-cyan-300">Takeaway:</span> {card.takeaway}</p>
+        <div className="mt-4 space-y-3 text-sm" style={{ color: "#1f2937" }}>
+          <p>
+            <span className="font-bold" style={{ color: "#27ae60" }}>Explanation: </span>
+            {card.explanation}
+          </p>
+          <p>
+            <span className="font-bold" style={{ color: "#3498db" }}>Example: </span>
+            {card.example}
+          </p>
+          <p>
+            <span className="font-bold" style={{ color: "#f1c40f" }}>Takeaway: </span>
+            {card.takeaway}
+          </p>
         </div>
       )}
 

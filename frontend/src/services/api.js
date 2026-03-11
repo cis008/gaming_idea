@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://gaming-idea-backend-production.up.railway.app/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://gaming-idea-backend-production.up.railway.app/api",
 });
 
 api.interceptors.request.use((config) => {
@@ -18,7 +18,7 @@ api.interceptors.response.use(
   (error) => {
     const url = error.config?.url || "";
     const isAuthEndpoint = url.includes("/signup") || url.includes("/login");
-    
+
     if (error.response?.status === 401 && !isAuthEndpoint) {
       localStorage.removeItem("authToken");
       localStorage.removeItem("username");

@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+
+// Redirects to /login if no authToken in localStorage
+function PrivateRoute({ children }) {
+  const token = localStorage.getItem("authToken");
+  return token ? children : <Navigate to="/login" replace />;
+}
+
 import FloatingChatbot from "./components/FloatingChatbot";
 import Navbar from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
@@ -77,7 +84,7 @@ function App() {
     const interval = setInterval(() => {
       const token = localStorage.getItem("authToken");
       if (!token || document.hidden) return;
-      trackActivity({ minutes: 1 }).catch(() => {});
+      trackActivity({ minutes: 1 }).catch(() => { });
     }, 60000);
 
     return () => clearInterval(interval);
@@ -101,17 +108,17 @@ function App() {
         isLoginPage={isLoginPage}
       />
       <Routes>
-        <Route path="/" element={<Home backgroundImage={selectedBackground.image} />} />
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/battle" element={<Learn />} />
-        <Route path="/mentor" element={<Learn />} />
-        <Route path="/learn" element={<Learn />} />
-        <Route path="/learning" element={<PrerecordedLectures />} />
-        <Route path="/prerecorded" element={<PrerecordedLectures />} />
-        <Route path="/quiz" element={<Quiz />} />
-        <Route path="/result" element={<Result />} />
+        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/battle" element={<PrivateRoute><Learn /></PrivateRoute>} />
+        <Route path="/mentor" element={<PrivateRoute><Learn /></PrivateRoute>} />
+        <Route path="/learn" element={<PrivateRoute><Learn /></PrivateRoute>} />
+        <Route path="/learning" element={<PrivateRoute><PrerecordedLectures /></PrivateRoute>} />
+        <Route path="/prerecorded" element={<PrivateRoute><PrerecordedLectures /></PrivateRoute>} />
+        <Route path="/quiz" element={<PrivateRoute><Quiz /></PrivateRoute>} />
+        <Route path="/result" element={<PrivateRoute><Result /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       {!shouldHideChatbot && <FloatingChatbot />}

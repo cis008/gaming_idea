@@ -4,9 +4,30 @@ const badgeNameMap = {
   "Perfect Score": "Quiz Master",
 };
 
+const badgeColourMap = {
+  "Starter Trainer": "green",
+  "Concept Catcher": "green",
+  "Quiz Master": "gold",
+  "Knowledge Champion": "gold",
+  "Elite Learner": "blue",
+  "5 Quiz Streak": "gold",
+};
+
+const badgeIconMap = {
+  "gold": "🏅",
+  "green": "🌿",
+  "blue": "💎",
+};
+
 function RetroBadge({ text }) {
   const label = badgeNameMap[text] || text;
-  return <span className="retro-badge">{label}</span>;
+  const colour = badgeColourMap[label] || "green";
+  const icon = badgeIconMap[colour];
+  return (
+    <span className="retro-badge" data-badge={colour}>
+      {icon} {label}
+    </span>
+  );
 }
 
 export default RetroBadge;

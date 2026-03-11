@@ -138,7 +138,7 @@ function Learn() {
 
       setFeedback(
         `${payload.result === "correct" ? "✅ Correct!" : "❌ Wrong."} ${payload.explanation} ` +
-          `Enemy -${payload.damage?.enemy ?? 0}, Player -${payload.damage?.player ?? 0}, XP +${payload.xp_gain ?? 0}`
+        `Enemy -${payload.damage?.enemy ?? 0}, Player -${payload.damage?.player ?? 0}, XP +${payload.xp_gain ?? 0}`
       );
 
       setSelectedOption(null);
@@ -163,38 +163,59 @@ function Learn() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 pb-24">
-      <h1 className="retro-title text-3xl font-bold">Battle Mode</h1>
-      <p className="mt-2 text-slate-700">
+      {/* Page header */}
+      <div className="flex items-center gap-3">
+        <span className="text-2xl">⚔️</span>
+        <h1 className="retro-title text-3xl font-bold">Battle Mode</h1>
+      </div>
+      <p className="mt-2" style={{ color: "#6b7280" }}>
         Enter retro battles to master core CS concepts with flashcards, quizzes, and AI-generated challenges.
       </p>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
+        {/* Subject selector */}
         <div className="pixel-card lg:col-span-1">
-          <p className="text-xs uppercase tracking-wide text-slate-600">1) Choose Subject</p>
+          <p className="pokemon-label">1) Choose Subject</p>
           <div className="mt-3 space-y-2">
             {subjects.map((item) => (
               <button
                 key={item.value}
                 onClick={() => setSubject(item.value)}
-                className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition ${
+                className="w-full rounded-lg border-2 px-3 py-2 text-left text-sm font-semibold transition"
+                style={
                   subject === item.value
-                    ? "border-cyan-500 bg-cyan-200 text-slate-900"
-                    : "border-slate-400 bg-slate-100 text-slate-700 hover:border-cyan-500 hover:bg-cyan-50"
-                }`}
+                    ? { borderColor: "#2ecc71", background: "#d4edda", color: "#1f2937" }
+                    : { borderColor: "#2d3436", background: "#f9fafb", color: "#1f2937" }
+                }
+                onMouseEnter={e => {
+                  if (subject !== item.value) {
+                    e.currentTarget.style.borderColor = "#2ecc71";
+                    e.currentTarget.style.background = "#f0fff4";
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (subject !== item.value) {
+                    e.currentTarget.style.borderColor = "#2d3436";
+                    e.currentTarget.style.background = "#f9fafb";
+                  }
+                }}
               >
                 {item.label}
               </button>
             ))}
           </div>
           <button onClick={loadRoadmap} className="pixel-button mt-4 w-full" disabled={loading}>
-            Generate Roadmap
+            {loading ? "Generating..." : "Generate Roadmap"}
           </button>
         </div>
 
+        {/* Concept roadmap */}
         <div className="pixel-card lg:col-span-2">
-          <p className="text-xs uppercase tracking-wide text-slate-600">2) Concept Roadmap</p>
+          <p className="pokemon-label">2) Concept Roadmap</p>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {roadmap.length === 0 && <p className="text-sm text-slate-600">Generate a roadmap to begin.</p>}
+            {roadmap.length === 0 && (
+              <p className="text-sm col-span-2" style={{ color: "#6b7280" }}>Generate a roadmap to begin.</p>
+            )}
             {roadmap.map((item, index) => {
               const isLocked = index > (battleProgress.unlocked_index ?? 0);
               const isMastered = masteredConcepts.has(item);
@@ -203,15 +224,16 @@ function Learn() {
                   key={item}
                   onClick={() => !isLocked && selectConcept(item)}
                   disabled={isLocked}
-                  className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
+                  className="rounded-lg border-2 px-3 py-2 text-left text-sm font-semibold transition"
+                  style={
                     isMastered
-                      ? "border-emerald-500 bg-emerald-100 text-emerald-900"
+                      ? { borderColor: "#27ae60", background: "#d4edda", color: "#1a5c36" }
                       : isLocked
-                        ? "cursor-not-allowed border-slate-300 bg-slate-100 text-slate-400"
-                        : "border-cyan-400 bg-cyan-50 text-slate-800 hover:border-cyan-500 hover:bg-cyan-100"
-                  }`}
+                        ? { borderColor: "#d1d5db", background: "#f3f4f6", color: "#9ca3af", cursor: "not-allowed" }
+                        : { borderColor: "#3498db", background: "#ebf5fb", color: "#1f2937" }
+                  }
                 >
-                  {index + 1}. {item} {isMastered ? "• Mastered" : isLocked ? "• Locked" : ""}
+                  {index + 1}. {item} {isMastered ? "✅ Mastered" : isLocked ? "🔒 Locked" : ""}
                 </button>
               );
             })}
@@ -219,6 +241,7 @@ function Learn() {
         </div>
       </div>
 
+      {/* Player stats */}
       <div className="mt-4">
         <PlayerStats
           xp={battleProgress.xp || 0}
@@ -227,9 +250,10 @@ function Learn() {
         />
       </div>
 
+      {/* Flashcards + Battle arena */}
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <div>
-          <p className="mb-2 text-xs uppercase tracking-wide text-slate-600">3) Flashcards</p>
+          <p className="pokemon-label mb-2">3) Flashcards</p>
           <FlashcardPanel
             flashcards={flashcards}
             index={flashcardIndex}
@@ -247,15 +271,15 @@ function Learn() {
         </div>
 
         <div>
-          <p className="mb-2 text-xs uppercase tracking-wide text-slate-600">4) Battle Arena</p>
+          <p className="pokemon-label mb-2">4) Battle Arena</p>
           {sessionId && battleStatus === "active" && (
-            <p className="mb-2 text-sm font-semibold text-slate-700">
+            <p className="mb-2 text-sm font-semibold" style={{ color: "#1f2937" }}>
               Question {Math.min(currentQuestionNumber, maxQuestions)}/{maxQuestions}
             </p>
           )}
           <div className="mb-3 flex gap-2">
             <button onClick={beginBattle} disabled={!concept || loading} className="pixel-button">
-              Start Battle
+              ▶ Start Battle
             </button>
           </div>
           <BattleArena

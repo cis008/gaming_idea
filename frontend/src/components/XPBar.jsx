@@ -3,7 +3,10 @@ function XPBar({ value, label = "XP Progress" }) {
 
   return (
     <div className="w-full">
-      <div className="mb-2 flex justify-between text-xs text-slate-200">
+      <div
+        className="mb-2 flex justify-between text-xs font-semibold"
+        style={{ color: "#1f2937" }}
+      >
         <span>{label}</span>
         <span>{percent}%</span>
       </div>

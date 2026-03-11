@@ -124,15 +124,9 @@ class BattleQuestionView(APIView):
         if session.status != "active":
             return Response({"detail": "Battle already finished."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if session.turns >= MAX_BATTLE_QUESTIONS:
-            return Response(
-                {
-                    "detail": f"Battle reached {MAX_BATTLE_QUESTIONS} questions.",
-                    "status": session.status,
-                    "turns": session.turns,
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        if session.turns >= MAX_BATTLE_QUESTIONS and session.enemy_hp > 0 and session.player_hp > 0:
+            # Keep going — battle ends only when HP hits 0
+            pass
 
         asked_questions = [str(item).strip() for item in (session.asked_questions or []) if str(item).strip()]
         asked_questions_set = {item.casefold() for item in asked_questions}
@@ -221,11 +215,6 @@ class BattleAnswerView(APIView):
         battle_won = session.enemy_hp == 0
         battle_lost = session.player_hp == 0
 
-        if not battle_won and not battle_lost and session.turns >= MAX_BATTLE_QUESTIONS:
-            if session.enemy_hp < session.player_hp:
-                battle_won = True
-            else:
-                battle_lost = True
 
         unlocked_concept = None
 
