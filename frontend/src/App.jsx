@@ -97,7 +97,8 @@ function App() {
   }, [location.pathname, setBattleMusicActive]);
 
   return (
-    <div className={`app-shell retro-screen theme-${theme} min-h-screen text-slate-100`}>
+    <div className={`app-shell retro-screen theme-${theme} min-h-screen`}>
+
       <Navbar
         theme={theme}
         onThemeChange={setTheme}

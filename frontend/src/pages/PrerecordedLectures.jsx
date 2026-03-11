@@ -165,7 +165,8 @@ function PrerecordedLectures() {
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
+    <main className="mx-auto max-w-6xl px-4 py-4 sm:py-8" style={{ color: "#1f2937" }}>
+
       <div className="flex items-center gap-3">
         <span className="text-2xl">📺</span>
         <h1 className="retro-title text-3xl font-bold">Learning Section</h1>
