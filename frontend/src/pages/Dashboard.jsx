@@ -32,7 +32,7 @@ function Dashboard() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <h1 className="retro-title text-3xl font-bold">Dashboard</h1>
-      <p className="mt-2 text-slate-300">Track your points, level, streak, and quiz performance.</p>
+      <p className="mt-2 text-slate-600">Track your points, level, streak, and quiz performance.</p>
 
       <div className="mt-6">
         <DashboardCards stats={stats} />
@@ -45,20 +45,20 @@ function Dashboard() {
             <RetroBadge key={badge} text={badge} />
           ))}
         </div>
-        <p className="mt-3 text-sm text-slate-200">Learning streak: {progress.streak || 0}</p>
-        <p className="mt-1 text-sm text-slate-200">Login streak days: {loginStreakDays}</p>
-        <p className="mt-1 text-sm text-slate-200">Quizzes completed: {stats.quizzes_completed || 0}</p>
+        <p className="mt-3 text-sm text-slate-700">Learning streak: {progress.streak || 0}</p>
+        <p className="mt-1 text-sm text-slate-700">Login streak days: {loginStreakDays}</p>
+        <p className="mt-1 text-sm text-slate-700">Quizzes completed: {stats.quizzes_completed || 0}</p>
       </PixelCard>
 
       <PixelCard className="mt-6">
         <h2 className="retro-title text-xl font-semibold">Section Progress</h2>
         <div className="mt-4 space-y-4">
-          {lectureProgress.length === 0 && <p className="text-slate-400">No section progress yet.</p>}
+          {lectureProgress.length === 0 && <p className="text-slate-600">No section progress yet.</p>}
           {lectureProgress.map((section) => (
             <div key={section.category}>
               <div className="flex items-center justify-between text-sm">
-                <p className="font-medium text-cyan-200">{section.category}</p>
-                <p className="text-slate-400">
+                <p className="font-medium text-slate-800">{section.category}</p>
+                <p className="text-slate-600">
                   {section.completed_topics}/{section.total_topics} ({section.progress_percent}%)
                 </p>
               </div>
@@ -73,11 +73,11 @@ function Dashboard() {
       <PixelCard className="mt-6">
         <h2 className="retro-title text-xl font-semibold">Recent Quizzes</h2>
         <div className="mt-4 space-y-2">
-          {recentQuizzes.length === 0 && <p className="text-slate-400">No quizzes yet.</p>}
+          {recentQuizzes.length === 0 && <p className="text-slate-600">No quizzes yet.</p>}
           {recentQuizzes.map((quiz) => (
             <div key={quiz.id} className="pixel-card text-sm">
-              <p className="font-medium">{quiz.topic}</p>
-              <p className="text-slate-400">Score: {quiz.score}/{quiz.total} • Accuracy: {quiz.accuracy}%</p>
+              <p className="font-medium text-slate-800">{quiz.topic}</p>
+              <p className="text-slate-600">Score: {quiz.score}/{quiz.total} • Accuracy: {quiz.accuracy}%</p>
             </div>
           ))}
         </div>

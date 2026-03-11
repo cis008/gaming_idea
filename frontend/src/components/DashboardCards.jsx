@@ -1,7 +1,7 @@
 function StatCard({ label, value }) {
   return (
     <div className="pixel-card">
-      <p className="text-[10px] uppercase tracking-wide text-slate-300">{label}</p>
+      <p className="text-xs uppercase tracking-wide text-slate-600">{label}</p>
       <p className="mt-2 text-2xl font-bold text-[var(--retro-success)]">{value}</p>
     </div>
   );

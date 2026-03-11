@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: gaming-idea-backend
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: gaming-idea-backend.onrender.com
+      - key: LLM_PROVIDER
+        value: claude
+      - key: ANTHROPIC_MODEL
+        value: claude-haiku-4-5-20251001
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://gaming-idea-frontend.onrender.com
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://gaming-idea-frontend.onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gaming-idea-db
+          property: connectionString
+
+  - type: web
+    name: gaming-idea-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://gaming-idea-backend.onrender.com/api
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+databases:
+  - name: gaming-idea-db
+    databaseName: gaming_idea
+    user: gaming_idea_user

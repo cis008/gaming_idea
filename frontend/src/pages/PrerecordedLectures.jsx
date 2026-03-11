@@ -262,10 +262,10 @@ function PrerecordedLectures() {
                     {messages.map((message, index) => (
                       <div
                         key={index}
-                        className={`max-w-[90%] rounded px-3 py-2 text-sm ${
+                        className={`max-w-[90%] rounded px-3 py-2 text-sm leading-relaxed ${
                           message.role === "user"
-                            ? "ml-auto bg-cyan-600/25 text-cyan-100"
-                            : "bg-slate-800 text-slate-100"
+                            ? "ml-auto border border-[#7dd3fc] bg-[#e0f2fe] text-[#0f172a]"
+                            : "border border-[#1e293b] bg-[#0f172a] text-white"
                         }`}
                       >
                         {message.content}

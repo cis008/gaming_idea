@@ -67,6 +67,29 @@ Frontend `.env`:
 
 - `VITE_API_BASE_URL=http://127.0.0.1:8000/api`
 
+## Deploy (Render)
+
+This repo includes `render.yaml` for a Blueprint deployment (backend + frontend + Postgres).
+
+### Quick steps
+
+1. Push your latest code to GitHub.
+2. In Render, choose **New +** → **Blueprint** and select this repository.
+3. Render will create:
+  - `gaming-idea-backend` (Django + Gunicorn)
+  - `gaming-idea-frontend` (static site)
+  - `gaming-idea-db` (Postgres)
+4. In Render dashboard, set backend env values:
+  - `ANTHROPIC_API_KEY` = your real key
+  - (optional) adjust domains for `ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS`, `CSRF_TRUSTED_ORIGINS`
+5. Trigger a deploy.
+
+### Notes
+
+- Backend start command runs migrations automatically.
+- Frontend route rewrite to `index.html` is included for React Router.
+- Keep `.env` local only; commit `.env.example` only.
+
 ## Application Flow
 
 Landing Page
