@@ -1,7 +1,6 @@
 from pathlib import Path
 import os
 
-import dj_database_url
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -65,14 +64,28 @@ ASGI_APPLICATION = "config.asgi.application"
 
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 if DATABASE_URL:
-    _db_config = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
-    # Only inject sslmode when the URL itself hasn't specified one.
-    # Railway's TCP proxy terminates TLS externally, so the Django←→proxy leg
-    # should use sslmode=disable; the internal private-network leg needs
-    # sslmode=require.  Let the DATABASE_URL value control this explicitly.
-    if not DEBUG and "sslmode" not in _db_config.get("OPTIONS", {}):
-        _db_config.setdefault("OPTIONS", {})["sslmode"] = "require"
-    DATABASES = {"default": _db_config}
+    import urllib.parse as _urlparse
+    _u = _urlparse.urlparse(DATABASE_URL)
+    _qs = _urlparse.parse_qs(_u.query)
+    # Let DATABASE_URL control sslmode; default to "prefer" so psycopg2 tries
+    # SSL first (required for Railway's external TCP proxy) and falls back
+    # to plain if the server doesn't support it.
+    _sslmode = _qs.get("sslmode", [("require" if not DEBUG else "prefer")])[0]
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": _u.path.lstrip("/"),
+            "USER": _u.username or "",
+            "PASSWORD": _u.password or "",
+            "HOST": _u.hostname or "",
+            "PORT": str(_u.port or 5432),
+            "CONN_MAX_AGE": 600,
+            "OPTIONS": {
+                "sslmode": _sslmode,
+                "connect_timeout": 10,
+            },
+        }
+    }
 else:
     DATABASES = {
         "default": {
