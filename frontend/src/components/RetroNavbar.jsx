@@ -31,8 +31,8 @@ function RetroNavbar({ isHomePage = false, isLoginPage = false }) {
   return (
     <header
       className={`retro-navbar top-0 z-50 border-[var(--retro-border)] ${isHomePage
-          ? "home-navbar fixed left-0 right-0 border-b-0 bg-transparent"
-          : "sticky border-b-4 bg-[var(--retro-panel)]"
+        ? "home-navbar fixed left-0 right-0 border-b-0 bg-transparent"
+        : "sticky border-b-4 bg-[var(--retro-panel)]"
         }`}
     >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
@@ -77,28 +77,49 @@ function RetroNavbar({ isHomePage = false, isLoginPage = false }) {
 
       {/* Mobile dropdown */}
       {!isLoginPage && menuOpen && (
-        <div className="md:hidden border-t-4 border-[var(--retro-border)] bg-[var(--retro-panel)] px-4 pb-4 pt-3 space-y-1">
+        <div className="md:hidden border-t-4 border-[var(--retro-border)] bg-[var(--retro-panel)] px-4 pb-4 pt-3 flex flex-col gap-2">
           {navLinks.map(({ to, label }) => (
             <NavLink
               key={to}
               to={to}
               onClick={closeMenu}
-              className={({ isActive }) =>
-                `retro-nav-link block w-full py-2 text-sm ${isActive ? "retro-nav-active" : ""}`
-              }
+              style={({ isActive }) => ({
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: "0.65rem",
+                padding: "12px 14px",
+                borderRadius: "8px",
+                textDecoration: "none",
+                letterSpacing: "0.05em",
+                background: isActive ? "#2ecc71" : "#f0fff4",
+                color: isActive ? "#ffffff" : "#1a5c36",
+                border: `2px solid ${isActive ? "#27ae60" : "#c8e6c9"}`,
+                fontWeight: 700,
+                display: "block",
+              })}
             >
               {label}
             </NavLink>
           ))}
-          <NavLink
+          <Link
             to="/profile"
             onClick={closeMenu}
-            className={({ isActive }) =>
-              `retro-nav-link block w-full py-2 text-sm ${isActive ? "retro-nav-active" : ""}`
-            }
+            style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "0.65rem",
+              padding: "12px 14px",
+              borderRadius: "8px",
+              textDecoration: "none",
+              letterSpacing: "0.05em",
+              background: "#f1c40f",
+              color: "#1a5c36",
+              border: "2px solid #d4ac0d",
+              fontWeight: 700,
+              display: "block",
+              marginTop: "4px",
+            }}
           >
             Profile
-          </NavLink>
+          </Link>
         </div>
       )}
     </header>
