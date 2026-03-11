@@ -29,7 +29,26 @@ function Login() {
       localStorage.setItem("username", response.data.username);
       navigate("/profile");
     } catch (err) {
-      setError(err.response?.data?.detail || "Authentication failed.");
+      // Handle various error formats
+      let errorMsg = "Authentication failed.";
+      
+      if (err.response?.data?.detail) {
+        errorMsg = err.response.data.detail;
+      } else if (err.response?.data?.username) {
+        errorMsg = Array.isArray(err.response.data.username)
+          ? err.response.data.username[0]
+          : err.response.data.username;
+      } else if (err.response?.data?.password) {
+        errorMsg = Array.isArray(err.response.data.password)
+          ? err.response.data.password[0]
+          : err.response.data.password;
+      } else if (err.response?.data?.email) {
+        errorMsg = Array.isArray(err.response.data.email)
+          ? err.response.data.email[0]
+          : err.response.data.email;
+      }
+      
+      setError(errorMsg);
     }
   };
 
