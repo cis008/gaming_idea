@@ -3,7 +3,10 @@ from apps.ai_agents.tasks import concept_task, quiz_task
 
 
 def run_learning_crew(topic: str):
-    agents = build_agents()
+    try:
+        agents = build_agents()
+    except Exception:
+        return {"raw": "CrewAI agents unavailable"}
 
     try:
         import importlib
@@ -14,25 +17,36 @@ def run_learning_crew(topic: str):
     except Exception:
         return {"raw": "CrewAI not available"}
 
-    c_task = concept_task(topic, agents["concept_tutor"])
-    q_task = quiz_task(topic, "", agents["quiz_generator"])
+    if not agents.get("concept_tutor") or not agents.get("quiz_generator"):
+        return {"raw": "CrewAI agents unavailable"}
+
+    try:
+        c_task = concept_task(topic, agents["concept_tutor"])
+        q_task = quiz_task(topic, "", agents["quiz_generator"])
+    except Exception:
+        return {"raw": "CrewAI tasks unavailable"}
 
     if not c_task or not q_task:
         return {"raw": "CrewAI tasks unavailable"}
 
-    crew = Crew(
-        agents=[agents["concept_tutor"], agents["quiz_generator"]],
-        tasks=[c_task, q_task],
-        process=Process.sequential,
-        verbose=False,
-    )
-
-    result = crew.kickoff()
-    return {"raw": str(result)}
+    try:
+        crew = Crew(
+            agents=[agents["concept_tutor"], agents["quiz_generator"]],
+            tasks=[c_task, q_task],
+            process=Process.sequential,
+            verbose=False,
+        )
+        result = crew.kickoff()
+        return {"raw": str(result)}
+    except Exception:
+        return {"raw": "CrewAI execution failed"}
 
 
 def run_quiz_generation_crew(topic: str, context: str = ""):
-    agents = build_agents()
+    try:
+        agents = build_agents()
+    except Exception:
+        return {"raw": "CrewAI agents unavailable"}
 
     try:
         import importlib
@@ -43,16 +57,25 @@ def run_quiz_generation_crew(topic: str, context: str = ""):
     except Exception:
         return {"raw": "CrewAI not available"}
 
-    q_task = quiz_task(topic, context, agents["quiz_generator"])
-    if not q_task or not agents["quiz_generator"]:
+    if not agents.get("quiz_generator"):
         return {"raw": "CrewAI quiz task unavailable"}
 
-    crew = Crew(
-        agents=[agents["quiz_generator"]],
-        tasks=[q_task],
-        process=Process.sequential,
-        verbose=False,
-    )
+    try:
+        q_task = quiz_task(topic, context, agents["quiz_generator"])
+    except Exception:
+        return {"raw": "CrewAI quiz task unavailable"}
 
-    result = crew.kickoff()
-    return {"raw": str(result)}
+    if not q_task:
+        return {"raw": "CrewAI quiz task unavailable"}
+
+    try:
+        crew = Crew(
+            agents=[agents["quiz_generator"]],
+            tasks=[q_task],
+            process=Process.sequential,
+            verbose=False,
+        )
+        result = crew.kickoff()
+        return {"raw": str(result)}
+    except Exception:
+        return {"raw": "CrewAI execution failed"}
