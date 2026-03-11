@@ -10,6 +10,7 @@ function Quiz() {
   const [category, setCategory] = useState("");
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
+  const [submitError, setSubmitError] = useState("");
 
   useEffect(() => {
     const raw = sessionStorage.getItem("quizPayload");
@@ -33,15 +34,24 @@ function Quiz() {
   };
 
   const onSubmit = async () => {
-    const response = await submitQuiz({
-      topic,
-      category,
-      questions,
-      user_answers: answers,
-    });
+    setSubmitError("");
+    try {
+      const response = await submitQuiz({
+        topic,
+        category,
+        questions,
+        user_answers: answers,
+      });
 
-    sessionStorage.setItem("resultPayload", JSON.stringify(response.data));
-    navigate("/result");
+      sessionStorage.setItem("resultPayload", JSON.stringify(response.data));
+      navigate("/result");
+    } catch (error) {
+      if (error.response?.status === 401) {
+        setSubmitError("Your session expired. Please login again.");
+      } else {
+        setSubmitError(error.response?.data?.detail || "Quiz submission failed. Please try again.");
+      }
+    }
   };
 
   return (
@@ -56,6 +66,7 @@ function Quiz() {
       {questions.length > 0 && (
         <div className="mt-6">
           <PixelButton onClick={onSubmit}>Submit Quiz</PixelButton>
+          {submitError && <p className="mt-3 text-sm text-rose-300">{submitError}</p>}
         </div>
       )}
     </main>

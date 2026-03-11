@@ -27,6 +27,7 @@ function PrerecordedLectures() {
   const [chatLoading, setChatLoading] = useState(false);
   const [videoSummary, setVideoSummary] = useState(null);
   const [loadingSummary, setLoadingSummary] = useState(false);
+  const [quizError, setQuizError] = useState("");
 
   const loadTopicProgress = async () => {
     try {
@@ -75,6 +76,7 @@ function PrerecordedLectures() {
     setMessages([]);
     setChatInput("");
     setVideoSummary(null);
+    setQuizError("");
   };
 
   const handleSummarizeVideo = async () => {
@@ -135,22 +137,31 @@ function PrerecordedLectures() {
 
   const handleGenerateQuiz = async () => {
     if (!selectedVideo?.title) return;
-    const response = await generateQuiz({
-      topic: selectedVideo.title,
-      category: selectedVideo.category,
-      explanation: explanation || {},
-    });
-
-    sessionStorage.setItem(
-      "quizPayload",
-      JSON.stringify({
+    setQuizError("");
+    try {
+      const response = await generateQuiz({
         topic: selectedVideo.title,
         category: selectedVideo.category,
         explanation: explanation || {},
-        questions: response.data.questions,
-      })
-    );
-    navigate("/quiz");
+      });
+
+      sessionStorage.setItem(
+        "quizPayload",
+        JSON.stringify({
+          topic: selectedVideo.title,
+          category: selectedVideo.category,
+          explanation: explanation || {},
+          questions: response.data.questions,
+        })
+      );
+      navigate("/quiz");
+    } catch (error) {
+      if (error.response?.status === 401) {
+        setQuizError("Your session expired. Please login again.");
+      } else {
+        setQuizError(error.response?.data?.detail || "Could not generate quiz. Please try again.");
+      }
+    }
   };
 
   return (
@@ -212,6 +223,8 @@ function PrerecordedLectures() {
                   {loadingSummary ? "Summarizing..." : "AI Summarize Video"}
                 </PixelButton>
               </div>
+
+              {quizError && <p className="mt-3 text-sm text-rose-300">{quizError}</p>}
 
               {videoSummary && (
                 <div className="pixel-card mt-4 text-sm border-[#7c3aed]">
