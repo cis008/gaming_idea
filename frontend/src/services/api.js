@@ -12,11 +12,14 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Auto-logout on 401: stale token (e.g. after backend redeploy wipes SQLite)
+// Auto-logout on 401 for protected endpoints only (not signup/login)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const url = error.config?.url || "";
+    const isAuthEndpoint = url.includes("/signup") || url.includes("/login");
+    
+    if (error.response?.status === 401 && !isAuthEndpoint) {
       localStorage.removeItem("authToken");
       localStorage.removeItem("username");
       sessionStorage.removeItem("quizPayload");
