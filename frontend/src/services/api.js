@@ -12,6 +12,22 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Auto-logout on 401: stale token (e.g. after backend redeploy wipes SQLite)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("username");
+      sessionStorage.removeItem("quizPayload");
+      sessionStorage.removeItem("resultPayload");
+      // Redirect to login with a message
+      window.location.href = "/login?reason=session_expired";
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const signup = (payload) => api.post("/signup", payload);
 export const login = (payload) => api.post("/login", payload);
 export const fetchMe = () => api.get("/me");

@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import PixelButton from "../components/PixelButton";
 import PixelCard from "../components/PixelCard";
 import { login, signup } from "../services/api";
 
 function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const sessionExpired = searchParams.get("reason") === "session_expired";
   const [isSignup, setIsSignup] = useState(false);
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [error, setError] = useState("");
@@ -36,6 +38,12 @@ function Login() {
       <div className="relative z-10 mx-auto flex max-w-md flex-col px-4 py-14">
         <h1 className="retro-title text-3xl font-bold">{isSignup ? "Create Account" : "Welcome Back"}</h1>
         <p className="mt-2 text-slate-300">Sign in to continue your gamified AI learning journey.</p>
+
+        {sessionExpired && (
+          <div className="mt-4 rounded-lg border-2 border-amber-400 bg-amber-900/60 px-4 py-3 text-sm text-amber-200">
+            ⚠ Your session expired. Please log in again.
+          </div>
+        )}
 
         <PixelCard className="mt-6">
         <form onSubmit={onSubmit} className="space-y-4">
