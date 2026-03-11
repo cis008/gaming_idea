@@ -50,7 +50,7 @@ function FloatingChatbot() {
   return (
     <>
       {open && (
-        <div className="chatbot-panel fixed bottom-28 right-6 z-50 w-[24rem] pixel-card">
+        <div className="chatbot-panel fixed bottom-28 right-4 z-50 w-[calc(100vw-2rem)] sm:w-96 pixel-card">
           <div className="flex items-center justify-between border-b-2 border-[rgba(0,245,255,0.3)] px-1 pb-2">
             <p className="text-xs font-semibold text-[var(--retro-accent-blue)]">AI Help Chat</p>
             <button onClick={() => setOpen(false)} className="text-slate-400 hover:text-slate-200" aria-label="Close chat">
