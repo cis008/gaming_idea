@@ -66,11 +66,12 @@ ASGI_APPLICATION = "config.asgi.application"
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 if DATABASE_URL:
     _db_config = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
-    # Explicitly set sslmode for production — do NOT use ssl_require kwarg as
-    # it is deprecated and conflicts with Railway's TCP proxy SSL negotiation.
-    if not DEBUG:
-        _db_config.setdefault("OPTIONS", {})
-        _db_config["OPTIONS"].setdefault("sslmode", "require")
+    # Only inject sslmode when the URL itself hasn't specified one.
+    # Railway's TCP proxy terminates TLS externally, so the Django←→proxy leg
+    # should use sslmode=disable; the internal private-network leg needs
+    # sslmode=require.  Let the DATABASE_URL value control this explicitly.
+    if not DEBUG and "sslmode" not in _db_config.get("OPTIONS", {}):
+        _db_config.setdefault("OPTIONS", {})["sslmode"] = "require"
     DATABASES = {"default": _db_config}
 else:
     DATABASES = {
